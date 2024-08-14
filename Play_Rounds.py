@@ -13,11 +13,15 @@ class ChooseRounds:
         self.intro_frame.grid()
 
         # heading and brief instructions
-        self.intro_heading_label = Label(self.intro_frame, text="God Quenstionaire",
+        self.intro_heading_label = Label(self.intro_frame, text="Colour Quest",
                                          font=("Arial", "16", "bold"))
         self.intro_heading_label.grid(row=0)
 
-        choose_instructions_txt = ""
+        choose_instructions_txt = "In each round you will be given six different " \
+                                  "colours to choose from.  Pick a colour and see if " \
+                                  "you can beat the computer's score!\n\n" \
+                                  "To begin, choose how many rounds you'd like to " \
+                                  "play..."
         self.choose_instructions_label = Label(self.intro_frame,
                                                text=choose_instructions_txt,
                                                wraplength=300, justify="left")
@@ -59,7 +63,7 @@ class Play:
         self.control_frame = Frame(self.quest_frame)
         self.control_frame.grid(row=6)
 
-        self.start_over_button = Button(self.control_frame, text="Try Again",
+        self.start_over_button = Button(self.control_frame, text="Start Over",
                                         command=self.close_play)
         self.start_over_button.grid(row=0, column=2)
 
@@ -73,6 +77,6 @@ class Play:
 # main routine
 if __name__ == "__main__":
     root = Tk()
-    root.title("God Questionnaire")
+    root.title("Colour Quest")
     ChooseRounds()
     root.mainloop()
