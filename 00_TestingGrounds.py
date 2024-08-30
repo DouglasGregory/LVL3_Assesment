@@ -1,12 +1,13 @@
 from tkinter import *
 
+
 class ChooseRounds:
     def __init__(self, master):
         self.master = master
         self.intro_frame = Frame(master, padx=10, pady=10)
         self.intro_frame.grid()
 
-        # Heading and brief instructions
+        # Main GUI and instructions
         self.intro_heading_label = Label(self.intro_frame, text="Greek God Questionnaire",
                                          font=("Arial", "16", "bold"))
         self.intro_heading_label.grid(row=0)
@@ -21,51 +22,57 @@ class ChooseRounds:
                                                wraplength=300, justify="left")
         self.choose_instructions_label.grid(row=1)
 
-        # Rounds buttons...
+        # Button for rounds to work
         self.how_many_frame = Frame(self.intro_frame)
         self.how_many_frame.grid(row=2)
 
         button_back = ["#6C9484", "#E4A484"]
 
-        for item in range(1, 3):
-            if item == 1:
-                button_text = "Play"
-            elif item == 2:
-                button_text = "Help"
+        self.rounds_button = []
+        for item in range(2):
+            button_text = "Play" if item == 0 else "Help"
+            btn = Button(self.how_many_frame,
+                         fg="#FFF", bg=button_back[item],
+                         text=button_text,
+                         font=("Arial", "13", "bold"), width=10,
+                         command=lambda i=item: self.to_play(i))
+            btn.grid(row=0, column=item, padx=5, pady=5)
+            self.rounds_button.append(btn)
 
-            self.rounds_button = Button(self.how_many_frame,
-                                        fg="#FFF", bg=button_back[item - 1],
-                                        text=button_text,
-                                        font=("Arial", "13", "bold"), width=10,
-                                        command=lambda i=item: self.to_play(i))
-            self.rounds_button.grid(row=0, column=item - 1,
-                                    padx=5, pady=5)
+    # play button
 
     def to_play(self, num_rounds):
-        if num_rounds == 3:  # Custom button pressed
-            self.open_custom_rounds_dialog()
+        if num_rounds == 0:
+            self.open_play_rounds_dialog()
         else:
-            # Hide current frame and open the Play window with predefined rounds
+            # remove original frame and open new window
             self.intro_frame.grid_forget()
-            Play(num_rounds, self.master)
+            self.open_help_window()
 
-    def open_custom_rounds_dialog(self):
-        self.custom_rounds_window = Toplevel(self.master)
-        self.custom_rounds_window.title("Enter Custom Rounds")
+    def open_play_rounds_dialog(self):
+        self.Play_rounds_window = Toplevel(self.master)
+        self.Play_rounds_window.title("God Questionnaire")
 
-        Label(self.custom_rounds_window, text="Enter number of rounds (1-99):").pack(pady=10)
+        # Instructions
+        Label(self.Play_rounds_window, text="Enter the number of rounds you wish to play").pack(pady=10)
 
-        self.rounds_entry = Entry(self.custom_rounds_window, width=10)
+        # choose number of rounds
+        self.rounds_entry = Entry(self.Play_rounds_window, width=10)
         self.rounds_entry.pack(pady=5)
         self.rounds_entry.focus()
 
-        Button(self.custom_rounds_window, text="OK", command=self.confirm_custom_rounds).pack(pady=10)
+        # Produce Error label
+        self.error_label = Label(self.Play_rounds_window, text="", fg="red")
+        self.error_label.pack(pady=5)
 
-    def confirm_custom_rounds(self):
+        # Ok button
+        Button(self.Play_rounds_window, text="OK", command=self.confirm_play_rounds).pack(pady=10)
+
+    def confirm_play_rounds(self):
         try:
             num_rounds = int(self.rounds_entry.get())
             if 1 <= num_rounds <= 99:
-                self.custom_rounds_window.destroy()
+                self.Play_rounds_window.destroy()
                 self.intro_frame.grid_forget()
                 Play(num_rounds, self.master)
             else:
@@ -74,43 +81,91 @@ class ChooseRounds:
             self.show_error("Please enter a valid number.")
 
     def show_error(self, message):
-        error_window = Toplevel(self.master)
-        error_window.title("Error")
-        Label(error_window, text=message, padx=20, pady=20).pack()
-        Button(error_window, text="OK", command=error_window.destroy).pack(pady=10)
+        # Error message
+        self.error_label.config(text=message)
+
+    def open_help_window(self):
+        help_window = Toplevel(self.master)
+        help_window.title("Help")
+
+        help_text = (
+            "This is a Questionnaire about Greek Gods.\n\n"
+            "In this Questionnaire, you will be answering"
+            "a selection of questions. \n\n"
+            "Depending on your choices, this will affect"
+            "the outcome. To play, you will \n\n"
+            "answer the questions presented to you.\n\n"
+            "Answering these correctly will contribute to"
+            "your final result. Choose carefully..."
+        )
+
+        Label(
+            help_window,
+            text=help_text,
+            padx=20, pady=20,
+            justify=LEFT
+        ).pack()
+
+        Button(help_window, text="OK", command=help_window.destroy).pack(pady=10)
+
 
 class Play:
     def __init__(self, how_many, master):
         self.master = master
-        self.play_box = Toplevel(master)
-        self.play_box.title("God Questionnaire")  # Updated window title
+        self.how_many = how_many  # Store number of rounds
+        self.current_round = 0  # Track current round
 
-        print("You Chose {} rounds".format(how_many))
+        self.play_box = Toplevel(master)
+        self.play_box.title("God Questionnaire")
 
         self.quest_frame = Frame(self.play_box, padx=10, pady=10)
         self.quest_frame.grid()
-
         self.control_frame = Frame(self.quest_frame)
         self.control_frame.grid(row=6)
 
         self.start_over_button = Button(self.control_frame, text="Start Over",
                                         command=self.start_over)
-        self.start_over_button.grid(row=0, column=2)
-
+        self.start_over_button.grid(row=0, column=0, padx=5, pady=5)
         self.exit_button = Button(self.control_frame, text="Back to Main Menu",
                                   command=self.return_to_main)
-        self.exit_button.grid(row=0, column=3)
+        self.exit_button.grid(row=0, column=1, padx=5, pady=5)
+        self.display_next_round()  # Show the first round
+
+    def display_next_round(self):
+        if self.current_round < self.how_many:
+            # Implement your logic for displaying questions for the current round here
+            Label(self.quest_frame, text="Round {self.current_round + 1}").grid(row=0)
+            # Example: Button for next round
+            Button(self.quest_frame, text="Next Round", command=self.next_round).grid(row=1)
+        else:
+            self.finish_game()  # End of rounds
+
+    def next_round(self):
+        self.current_round += 1
+        self.quest_frame.grid_forget()  # Clear previous round
+        self.quest_frame = Frame(self.play_box, padx=10, pady=10)
+        self.quest_frame.grid()
+        self.display_next_round()  # Display the next round
+
+    def finish_game(self):
+        Label(self.quest_frame, text="You've completed all rounds!").grid(row=0)
+        Button(self.quest_frame, text="Finish", command=self.return_to_main).grid(row=1)
 
     def start_over(self):
         self.play_box.destroy()
-        ChooseRounds(self.master)
+        self.master.destroy()
+        root = Tk()
+        root.title("God Questionnaire")
+        ChooseRounds(root)
+        root.mainloop()
 
     def return_to_main(self):
         self.play_box.destroy()
-        ChooseRounds(self.master)
+        self.master.deiconify()
+
 
 if __name__ == "__main__":
     root = Tk()
-    root.title("God Questionnaire")  # Updated main window title
-    ChooseRounds(root)  # Start with the God Questionnaire GUI
+    root.title("God Questionnaire")
+    ChooseRounds(root)
     root.mainloop()
