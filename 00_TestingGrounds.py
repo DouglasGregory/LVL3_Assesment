@@ -39,8 +39,6 @@ class ChooseRounds:
             btn.grid(row=0, column=item, padx=5, pady=5)
             self.rounds_button.append(btn)
 
-    # play button
-
     def to_play(self, num_rounds):
         if num_rounds == 0:
             self.open_play_rounds_dialog()
@@ -74,7 +72,7 @@ class ChooseRounds:
             if 1 <= num_rounds <= 99:
                 self.Play_rounds_window.destroy()
                 self.intro_frame.grid_forget()
-                Play(num_rounds, self.master)
+                self.Play(num_rounds, self.master)
             else:
                 self.show_error("Please enter a number between 1 and 99.")
         except ValueError:
@@ -108,60 +106,59 @@ class ChooseRounds:
 
         Button(help_window, text="OK", command=help_window.destroy).pack(pady=10)
 
+    class Play:
+        def __init__(self, how_many, master):
+            self.master = master
+            self.how_many = how_many  # Store number of rounds
+            self.current_round = 0  # Track current round
 
-class Play:
-    def __init__(self, how_many, master):
-        self.master = master
-        self.how_many = how_many  # Store number of rounds
-        self.current_round = 0  # Track current round
+            self.play_box = Toplevel(master)
+            self.play_box.title("God Questionnaire")
 
-        self.play_box = Toplevel(master)
-        self.play_box.title("God Questionnaire")
+            self.quest_frame = Frame(self.play_box, padx=10, pady=10)
+            self.quest_frame.grid()
+            self.control_frame = Frame(self.quest_frame)
+            self.control_frame.grid(row=6)
 
-        self.quest_frame = Frame(self.play_box, padx=10, pady=10)
-        self.quest_frame.grid()
-        self.control_frame = Frame(self.quest_frame)
-        self.control_frame.grid(row=6)
+            self.start_over_button = Button(self.control_frame, text="Start Over",
+                                            command=self.start_over)
+            self.start_over_button.grid(row=0, column=0, padx=5, pady=5)
+            self.exit_button = Button(self.control_frame, text="Back to Main Menu",
+                                      command=self.return_to_main)
+            self.exit_button.grid(row=0, column=1, padx=5, pady=5)
+            self.display_next_round()  # Show the first round
 
-        self.start_over_button = Button(self.control_frame, text="Start Over",
-                                        command=self.start_over)
-        self.start_over_button.grid(row=0, column=0, padx=5, pady=5)
-        self.exit_button = Button(self.control_frame, text="Back to Main Menu",
-                                  command=self.return_to_main)
-        self.exit_button.grid(row=0, column=1, padx=5, pady=5)
-        self.display_next_round()  # Show the first round
+        def display_next_round(self):
+            if self.current_round < self.how_many:
+                # Implement your logic for displaying questions for the current round here
+                Label(self.quest_frame, text=f"Round {self.current_round + 1}").grid(row=0)
+                # Example: Button for next round
+                Button(self.quest_frame, text="Next Round", command=self.next_round).grid(row=1)
+            else:
+                self.finish_game()  # End of rounds
 
-    def display_next_round(self):
-        if self.current_round < self.how_many:
-            # Implement your logic for displaying questions for the current round here
-            Label(self.quest_frame, text="Round {self.current_round + 1}").grid(row=0)
-            # Example: Button for next round
-            Button(self.quest_frame, text="Next Round", command=self.next_round).grid(row=1)
-        else:
-            self.finish_game()  # End of rounds
+        def next_round(self):
+            self.current_round += 1
+            self.quest_frame.grid_forget()  # Clear previous round
+            self.quest_frame = Frame(self.play_box, padx=10, pady=10)
+            self.quest_frame.grid()
+            self.display_next_round()  # Display the next round
 
-    def next_round(self):
-        self.current_round += 1
-        self.quest_frame.grid_forget()  # Clear previous round
-        self.quest_frame = Frame(self.play_box, padx=10, pady=10)
-        self.quest_frame.grid()
-        self.display_next_round()  # Display the next round
+        def finish_game(self):
+            Label(self.quest_frame, text="You've completed all rounds!").grid(row=0)
+            Button(self.quest_frame, text="Finish", command=self.return_to_main).grid(row=1)
 
-    def finish_game(self):
-        Label(self.quest_frame, text="You've completed all rounds!").grid(row=0)
-        Button(self.quest_frame, text="Finish", command=self.return_to_main).grid(row=1)
+        def start_over(self):
+            self.play_box.destroy()
+            self.master.destroy()
+            root = Tk()
+            root.title("God Questionnaire")
+            ChooseRounds(root)
+            root.mainloop()
 
-    def start_over(self):
-        self.play_box.destroy()
-        self.master.destroy()
-        root = Tk()
-        root.title("God Questionnaire")
-        ChooseRounds(root)
-        root.mainloop()
-
-    def return_to_main(self):
-        self.play_box.destroy()
-        self.master.deiconify()
+        def return_to_main(self):
+            self.play_box.destroy()
+            self.master.deiconify()
 
 
 if __name__ == "__main__":
