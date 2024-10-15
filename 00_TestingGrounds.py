@@ -2,9 +2,8 @@ from tkinter import *
 
 
 class ChooseRounds:
-    def __init__(self, master):
-        self.master = master
-        self.intro_frame = Frame(master, padx=10, pady=10)
+    def __init__(self):
+        self.intro_frame = Frame(root, padx=10, pady=10)
         self.intro_frame.grid()
 
         # Main GUI and instructions
@@ -48,7 +47,7 @@ class ChooseRounds:
             self.open_help_window()
 
     def open_play_rounds_dialog(self):
-        self.Play_rounds_window = Toplevel(self.master)
+        self.Play_rounds_window = Toplevel(root)
         self.Play_rounds_window.title("God Questionnaire")
 
         # Instructions
@@ -72,7 +71,7 @@ class ChooseRounds:
             if 1 <= num_rounds <= 99:
                 self.Play_rounds_window.destroy()
                 self.intro_frame.grid_forget()
-                self.Play(num_rounds, self.master)
+                self.Play(num_rounds, root)
             else:
                 self.show_error("Please enter a number between 1 and 99.")
         except ValueError:
@@ -83,7 +82,7 @@ class ChooseRounds:
         self.error_label.config(text=message)
 
     def open_help_window(self):
-        help_window = Toplevel(self.master)
+        help_window = Toplevel(root)
         help_window.title("Help")
 
         help_text = (
@@ -153,16 +152,16 @@ class ChooseRounds:
             self.master.destroy()
             root = Tk()
             root.title("God Questionnaire")
-            ChooseRounds(root)
+            ChooseRounds()
             root.mainloop()
 
         def return_to_main(self):
             self.play_box.destroy()
-            self.master.deiconify()
+            self.master.deiconify() # Show the main window again
 
 
 if __name__ == "__main__":
     root = Tk()
     root.title("God Questionnaire")
-    ChooseRounds(root)
+    ChooseRounds()
     root.mainloop()
